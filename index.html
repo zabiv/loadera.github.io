@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TVAR</title>
+	<style type="text/css">
+		#vk_comments{
+			margin: 0 auto;
+			}
+		body{
+			background: url("img/fons.png"),
+						linear-gradient(red,orange,yellow,lime,skyblue,blue,purple,red);
+			text-align: center;
+			color:gold;
+			}
+		.butn{
+			padding: 100px;
+		}
+		#pants{
+			margin-top:10%;
+		}
+		#start{
+			padding: 100px;
+		}
+	</style>
+	<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160"></script>
+
+</head>
+<body>
+	
+	<h2>TVAR simulator 0.1.9.1</h2>
+	<h3>Управление:WASD(на компьютерах) или Большие стрелки снизу(на телефонах)</h3><br>
+	<button id="start" onclick="start()">СТАРТ</button><br>
+	<canvas id="canv" height="720" width="720">канвас не поддерживается браузером скачяй другой</canvas>
+	<br>
+	<button id="up" class="butn">/\</button>
+	<br>
+	<button id="left" class="butn"><</button>
+	<button id="down" class="butn">\/</button>
+	<button id="right" class="butn">></button>
+	<script type="text/javascript">
+		var canv=document.getElementById("canv");
+		var ctx=canv.getContext("2d");
+		var hud=new Image();
+		var bg=new Image();
+		var gg=new Image();
+		var shr=new Image();
+		var hp=100;
+		var dead=new Audio();
+		var theme=new Audio();
+		theme.src="theme.ogg";
+		dead.src="dead.ogg";
+		hud.src="img/hud.png";
+		bg.src="img/bg.jpg";
+		gg.src="img/gg.png";
+		shr.src="img/shr.png";
+		var shrcolx=false,
+			shrcoly=false;
+		var go=0;
+		var prs=false;
+		var x=50;
+		var y=50;
+		var shrx=500;
+		var shry=400;
+		var speed=2;
+		var shrspeed=10;
+		var seconds=0;
+		var up=document.getElementById("up");
+		var down=document.getElementById("down");
+		var left=document.getElementById("left");
+		var right=document.getElementById("right");
+		var phone=prompt("Вы на телефоне?\n1-да\n0-нет");
+		var gstart=false;
+		if(phone==1){
+			speed=3;
+			shrspeed=8;
+		}else{
+			speed=2;
+			shrspeed=10;
+		}
+		
+		up.onclick=function(){
+			prs=true;
+			go=1;
+		};
+		down.onclick=function(){
+			prs=true;
+			go=2;
+		};
+		left.onclick=function(){
+			prs=true;
+			go=3;
+		};
+		right.onclick=function(){
+			prs=true;
+			go=4;
+		};
+		addEventListener("keydown", function(event) {
+    		switch(event.keyCode)
+ 			{
+			    case 87:
+			    	prs=true;
+			   		go=1;
+			   		break;
+			    case 83:
+			    	prs=true;
+			   		go=2;
+			   		break;
+			    case 65:
+			    	prs=true;
+			   		go=3;
+			   		break;
+			    case 68:
+			    	prs=true;
+			    	go=4;
+			    	break;
+			}
+    		});
+  		addEventListener("keyup", function(event) {
+    		switch(event.keyCode)
+ 			{
+			    case 87:
+			    	prs=false;
+			   		go=0;
+			   		break;
+			    case 83:
+			    	prs=false;
+			   		go=0;
+			   		break;
+			    case 65:
+			    	prs=false;
+			   		go=0;
+			   		break;
+			    case 68:
+			    	prs=false;
+			    	go=0;
+			    	break;
+			}
+    		});
+  		function goup1(){
+  			y-=speed;
+  		}
+  		function godown1(){
+  			y+=speed;
+  		}
+  		function goleft1(){
+  			x-=speed;
+  		}
+  		function goright1(){
+  			x+=speed;
+  		}
+		bg.onload=function(){
+			ctx.drawImage(bg,0,0);
+			ctx.drawImage(hud,0,520);
+			ctx.drawImage(gg,x,y);
+			ctx.drawImage(shr,shrx,shry);}
+		function draw(){
+			
+			if(prs==true){
+				switch(go){
+					case 1:
+						goup1();
+						break;
+					case 2:
+						godown1();
+						break;
+					case 3:
+						goleft1();
+						break;
+					case 4:
+						goright1();
+						break;
+				}
+			}else{
+				gg.src="img/gg.png";
+			}
+			if(x<=0){x=1;}else{}
+			if(x>=696){x=695;}else{}
+			if(y<=0){y=1;}else{}
+			if(y>=457){y=456;}else{}
+			
+			if(x+25>=shrx&&x<=shrx+1&&y>=shry-65&&y<=shry+63){x=shrx-25; hp-=1}//слева
+			if(x+25>=shrx-1&&x<=shrx+32&&y+64>=shry-2&&y+64<=shry+5){y=shry-64; hp-=1}//сверху
+			if(x>=shrx+32&&x<=shrx+32&&y>=shry-65&&y<=shry+64){x=shrx+33; hp-=1}//справа
+			if(x+25>=shrx&&x<=shrx+32&&y<=shry+65&&y>=shry+59){y=shry+66; hp-=1}//снизу
+			if(hp<=0){stop();dead.play();theme.pause();currentTime = 0.0;alert("Ты помер от шрека\nВремя:"+seconds+" секунд(ы)");hp=100;seconds=0;x=50;y=50;shrx=500;shry=400;}
+			ctx.drawImage(bg,0,0);
+			ctx.drawImage(hud,0,520);
+			ctx.drawImage(gg,x,y);
+			ctx.drawImage(shr,shrx,shry);
+			ctx.font="30px arial";
+			ctx.fillStyle="red";
+			ctx.fillText(hp,100,620);
+			if(gstart){requestAnimationFrame(draw);}
+		}
+		function start(){
+			var timerId = setInterval(function() {
+				seconds++
+			}, 1000);
+			shrmoving = setInterval(function(){if(shrx<=x){shrx+=1} if(shrx>=x){shrx-=1}if(shry<=y){shry+=1}if(shry>=y){shry-=1}}, shrspeed);
+			var sbtn = document.getElementById("start");
+			sbtn.style.display="none";
+			theme.volume=0.2;
+			theme.play();
+			gstart=true;
+			draw();
+		}
+		function stop(){
+			theme.currentTime=0;
+			clearInterval(shrmoving);
+			gstart=false;
+			theme.curentTime
+			var sbtn = document.getElementById("start");
+			sbtn.style.display="inline";
+		}
+		
+	</script>
+	<br>
+
+	<div id="pants">
+		Разработчик - Егор Иванов ( WebJCou ) <a href="https://www.vk.com/myphpsql">vk.com/myphpsql</a>
+		<br>
+		Режиссер/Разработчик -  Олег Пашин ( P3LM3N ) <a href="https://vk.com/true_p3lm3n">vk.com/true_p3lm3n</a>
+		<br>
+		Режиссер - Егор Чуприн <a href="https://vk.com/echuprin2000">vk.com/echuprin2000</a>
+		<br>
+		Известный лидер телефонной версии 962 секунд - Кот Василий <a href="https://vk.com/id315145132">vk.com/id315145132</a>
+		<br>
+		Известный лидер компьютерной версии 97 секунд - Андрей Владимиров ( Andy Hokage ) <a href="https://vk.com/ld8530">vk.com/ld8530</a>
+		<br>
+		<img src ="comnt1.png"></img> <img src="comnt2.png"> <img src="comnt3.png">
+	</div>
+	<div id="comnt">
+	<script type="text/javascript">
+		VK.init({apiId: 6850969, onlyWidgets: true});
+	</script>
+	<div id="vk_comments" align="center" ></div>
+	<script type="text/javascript">
+		VK.Widgets.Comments("vk_comments", {limit: 10, attach: "*",width:720});
+	</script>
+	<img src="egg.jpg" height="75px;">
+</body>
+</html>
